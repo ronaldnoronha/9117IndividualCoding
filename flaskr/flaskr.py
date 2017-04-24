@@ -75,6 +75,26 @@ def login():
     return render_template("login.html", error=error)
 
 
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    error = None
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        if username and password:
+            db = get_db()
+            cur = db.execute("select * from users where username =? and password = ?", [username,password])
+            rows = cur.fetchone()
+            if rows:
+                session['logged_in'] = True
+                flash("Login Success!")
+            else:
+                error = "Bad Login"
+        else:
+            error = "Missing user credentials"
+
+    return render_template("login.html", error=error)
+
 @app.route('/logout')
 def logout():
     session.pop('logged_in', None)
